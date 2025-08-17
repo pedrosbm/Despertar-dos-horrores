@@ -1,0 +1,12 @@
+
+h1 {
+    font-family: "UnifrakturCook", cursive;
+    font-weight: 700;
+    font-style: normal;
+}
+
+h2 {
+    font-family: "MedievalSharp", cursive;
+    font-weight: 600;
+    font-style: normal;
+}

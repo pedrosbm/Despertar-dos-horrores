@@ -1,14 +1,15 @@
 import type { PropsWithChildren } from "react"
-import "./Header.scss"
 
 const Header = ({ children }: PropsWithChildren) => {
     return (
-        <header className="header">
-            <div className="title">
-                <h1>Despertar do horrores</h1>
+        <header className="">
+            {/* Fixed logo */}
+            <div className="">
+                <h1>Despertar dos horrores</h1>
             </div>
 
-            <div className="options">
+            {/* Options via children */}
+            <div className="">
                 {children}
             </div>
         </header>
