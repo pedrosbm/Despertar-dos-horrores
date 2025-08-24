@@ -7,7 +7,7 @@ const PrivateLayout = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (user == null) {
+        if (user == undefined) {
             navigate("/login")
         }
     }, [user])

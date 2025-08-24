@@ -1,86 +1,53 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import { useCookies } from "react-cookie";
 import type { Usuario } from "@/types/usuario";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "@/api/userRequests";
 
 type AuthContextType = {
-    user: Usuario | null;
-    login: (email: string, senha: string) => Promise<Usuario>;
+    user: Usuario | undefined;
+    login: (email: string, senha: string) => void;
     logout: () => void;
-    register: (data: Omit<Usuario, "id">) => Promise<Usuario>;
+    register: (data: Omit<Usuario, "id">) => void;
     updateUser: (patch: Partial<Usuario>) => void;
 };
 
-const STORAGE_KEY = "ddh:user";
+const STORAGE_KEY = "ddhUser";
 
-// Dev-only default user to simulate authentication during development
-const DEV_USER: Usuario = {
-    id: 1,
-    nome: "Dev User",
-    email: "dev@example.com",
-    senha: "dev",
-    cargo: "MESTRE",
-};
+const API = import.meta.env.VITE_API_URL as string
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-    // use cookies for persistence instead of localStorage
     const [cookies, setCookie, removeCookie] = useCookies([STORAGE_KEY]);
 
-    const [user, setUser] = useState<Usuario | null>(() => {
-        try {
-            const raw = cookies[STORAGE_KEY];
-            if (raw) return typeof raw === "string" ? (JSON.parse(raw) as Usuario) : (raw as Usuario);
+    const query = useQuery<Usuario, Error>({
+        queryKey: ["usuario"],
+        queryFn: () => getUser(cookies.ddhUser),
+        enabled: false
+    })
 
-            // If no persisted user and we're in dev, return a predefined dev user so the app behaves as authenticated
-            // if (import.meta.env.DEV) {
-            //     return DEV_USER;
-            // }
-
-            return null;
-        } catch {
-            return null;
-        }
-    });
+    const { data: user, isPending, error } = query
 
     useEffect(() => {
-        if (user) {
-            // store as string to avoid serialization issues
-            setCookie(STORAGE_KEY, JSON.stringify(user), { path: "/" });
-        } else {
-            removeCookie(STORAGE_KEY, { path: "/" });
+        if (cookies.ddhUser) {
+            query.refetch();
         }
-    }, [user, setCookie, removeCookie]);
+    }, [cookies.ddhUser])
 
-    // TODO: Implement real login calling your API. Currently mocked for local development.
-    const login = async (email: string, senha: string) => {
-        // Mock implementation: create a user from email/senha
-        const logged: Usuario = {
-            id: Date.now(),
-            nome: email.split("@")[0] ?? "Usuário",
-            email,
-            senha,
-            cargo: "USER",
-        };
-        setUser(logged);
-        return logged;
+    const login = async (nome: string, senha: string) => {
+
     };
 
-    // TODO: Implement real registration calling your API. Currently mocked.
-    const register = async (data: Omit<Usuario, "id">) => {
-        const newUser: Usuario = { id: Date.now(), ...data };
-        setUser(newUser);
-        return newUser;
-    };
+    const register = (data: Omit<Usuario, "id">) => {
+    }
 
     const logout = () => {
-        // TODO: call backend logout if necessary
-        setUser(null);
+
     };
 
     const updateUser = (patch: Partial<Usuario>) => {
-        // TODO: persist changes to backend when available
-        setUser((prev) => (prev ? { ...prev, ...patch } : null));
+
     };
 
     return (
