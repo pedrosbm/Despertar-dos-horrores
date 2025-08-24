@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
+import { createContext, useContext, useEffect, type PropsWithChildren } from "react";
 import { useCookies } from "react-cookie";
 import type { Usuario } from "@/types/usuario";
 import { useQuery } from "@tanstack/react-query";
@@ -14,12 +14,12 @@ type AuthContextType = {
 
 const STORAGE_KEY = "ddhUser";
 
-const API = import.meta.env.VITE_API_URL as string
+// const API = import.meta.env.VITE_API_URL as string
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-    const [cookies, setCookie, removeCookie] = useCookies([STORAGE_KEY]);
+    const [cookies] = useCookies([STORAGE_KEY]);
 
     const query = useQuery<Usuario, Error>({
         queryKey: ["usuario"],
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         enabled: false
     })
 
-    const { data: user, isPending, error } = query
+    const { data: user } = query
 
     useEffect(() => {
         if (cookies.ddhUser) {
@@ -36,10 +36,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, [cookies.ddhUser])
 
     const login = async (nome: string, senha: string) => {
-
+        console.log("Salve: " + nome + " " + senha)
     };
 
     const register = (data: Omit<Usuario, "id">) => {
+        console.log(data)
     }
 
     const logout = () => {
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     };
 
     const updateUser = (patch: Partial<Usuario>) => {
-
+        console.log(patch)
     };
 
     return (
