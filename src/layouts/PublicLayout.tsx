@@ -14,10 +14,16 @@ const PublicLayout = () => {
 
     return (
         <>
-            <div>
-                {/* TODO header */}
-                <Outlet />
-            </div>
+            {/* TODO header */}
+            <Outlet />
+
+            <img
+                src="/fundo.png"
+                alt="background"
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
+                className="absolute bottom-0 w-full object-fill opacity-70 select-none pointer-events-none"
+            />
         </>
     )
 }
